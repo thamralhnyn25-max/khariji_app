@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Set up Java
       uses: actions/setup-java@v3
@@ -26,13 +27,14 @@ jobs:
         channel: 'stable'
 
     - name: Install dependencies
+      uses: subosito/flutter-action@v2 # أو flutter pub get مباشر
       run: flutter pub get
 
     - name: Build APK
       run: flutter build apk --release
 
     - name: Upload APK Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: app-release.apk
+        name: app-release
         path: build/app/outputs/flutter-apk/app-release.apk
