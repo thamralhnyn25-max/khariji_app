@@ -23,7 +23,7 @@ class KharijiApp extends StatelessWidget {
   }
 }
 
-// ================= شاشة المصادقة (تسجيل الدخول / إنشاء حساب) =================
+// ================= شاشة المصادقة (جلسة ثابتة) =================
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
 
@@ -129,23 +129,9 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 }
 
-// ================= الواجهة الرئيسية =================
-class HomeScreen extends StatefulWidget {
+// ================= الواجهة الرئيسية (ترتيب مربعات 2x2) =================
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  String? selectedStage;
-  String? selectedBranch;
-
-  final Map<String, List<String>> stagesData = {
-    'الابتدائية': ['خارجي ابتدائي'],
-    'المتوسطة': ['خارجي متوسطة'],
-    'الاعدادية': ['علمي (إحيائي/تطبيقي/حاسبات)', 'أدبي', 'مهني (صناعي/حاسوب/إداري)'],
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -166,100 +152,278 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GridView.count(
+          crossAxisCount: 2, // عمودين (مربعين في كل صف)
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.95,
+          children: [
+            // المربع 1: العداد التنازلي وموعد التقديم (مع العداد الحي)
+            const CountdownGridCard(),
+
+            // المربع 2: اختيار المرحلة الدراسية
+            _buildDashboardCard(
+              context,
+              title: 'المرحلة الدراسية',
+              icon: Icons.school,
+              color: Colors.blue,
+              onTap: () => _showStageDialog(context),
+            ),
+
+            // المربع 3: الملازم والكتب الدراسية
+            _buildDashboardCard(
+              context,
+              title: 'الملازم والكتب',
+              icon: Icons.menu_book,
+              color: Colors.green,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MaterialsScreen()),
+                );
+              },
+            ),
+
+            // المربع 4: البث المباشر والمنظمين
+            _buildDashboardCard(
+              context,
+              title: 'البث المباشر',
+              icon: Icons.live_tv,
+              color: Colors.purple,
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('سيتم تفعيل البث المباشر قريباً')),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashboardCard(BuildContext context, {required String title, required IconData icon, required Color color, required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.15),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: color.withOpacity(0.1),
+              child: Icon(icon, size: 32, color: color),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showStageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('اختر مرحلتك الدراسية'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('المرحلة الابتدائية'),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              title: const Text('المرحلة المتوسطة'),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              title: const Text('المرحلة الإعدادية (علمي/أدبي/مهني)'),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ================= مربع العداد التنازلي التفاعلي (Live Counter Card) =================
+class CountdownGridCard extends StatefulWidget {
+  const CountdownGridCard({super.key});
+
+  @override
+  State<CountdownGridCard> createState() => _CountdownGridCardState();
+}
+
+class _CountdownGridCardState extends State<CountdownGridCard> {
+  late Timer _timer;
+  Duration _timeLeft = Duration.zero;
+  final DateTime _examDate = DateTime(2027, 2, 1, 8, 0, 0);
+
+  @override
+  void initState() {
+    super.initState();
+    _updateTimeLeft();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _updateTimeLeft();
+    });
+  }
+
+  void _updateTimeLeft() {
+    final now = DateTime.now();
+    if (_examDate.isAfter(now)) {
+      setState(() {
+        _timeLeft = _examDate.difference(now);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final days = _timeLeft.inDays;
+
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('مواعيد التقديم والامتحان'),
+            content: Text('⏳ متبقي للامتحان التمهيدي: $days يوماً\n\n📅 موعد فتح التقديم الرسمي: 20 تشرين الثاني 2026'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text('حسناً'))
+            ],
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.15),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: Colors.orange.withOpacity(0.3), width: 1.5),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 28,
+              backgroundColor: Color(0xFFFFE0B2), // Orange 100
+              child: Icon(Icons.timer, size: 30, color: Colors.orange),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'الامتحان والتقديم',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'متبقي $days يوماً',
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.orange),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ================= شاشة الملازم والكتب الدراسية =================
+class MaterialsScreen extends StatelessWidget {
+  const MaterialsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('الملازم والكتب الدراسية'),
+        centerTitle: true,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // ================= الخانة 1: عداد الوقت التنازلي وموعد التقديم =================
-          const ExamCountdownCard(),
-          const SizedBox(height: 16),
-
-          // ================= الخانة 2: اختيار المرحلة الدراسية =================
-          Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: const [
-                      Icon(Icons.school, color: Colors.blue, size: 28),
-                      SizedBox(width: 8),
-                      Text('اختر المرحلة الدراسية', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const Divider(height: 20),
-                  DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: 'اختر المرحلة',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    value: selectedStage,
-                    items: stagesData.keys.map((stage) {
-                      return DropdownMenuItem(value: stage, child: Text(stage));
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedStage = value;
-                        selectedBranch = null;
-                      });
-                    },
-                  ),
-                  if (selectedStage == 'الاعدادية') ...[
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        labelText: 'اختر الفرع',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      value: selectedBranch,
-                      items: stagesData['الاعدادية']!.map((branch) {
-                        return DropdownMenuItem(value: branch, child: Text(branch));
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedBranch = value;
-                        });
-                      },
-                    ),
-                  ],
-                ],
-              ),
-            ),
+          _buildMaterialCategory(
+            context,
+            title: 'الكتب المنهجية الرسمية',
+            subtitle: 'تنزيل المناهج المقررة لجميع المراحل',
+            icon: Icons.book,
+            color: Colors.green,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          _buildMaterialCategory(
+            context,
+            title: 'الملازم الوزارية',
+            subtitle: 'أفضل الملازم المعتمدة والشاملة',
+            icon: Icons.verified,
+            color: Colors.blue,
+          ),
+          const SizedBox(height: 12),
+          _buildMaterialCategory(
+            context,
+            title: 'ملازم المراجعات المركزة',
+            subtitle: 'ملخصات ومهمات لضمان التفوق',
+            icon: Icons.local_fire_department,
+            color: Colors.red,
+          ),
+        ],
+      ),
+    );
+  }
 
-          // ================= الخانة 3: الملازم الدراسية =================
-          Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: const [
-                      Icon(Icons.menu_book, color: Colors.green, size: 28),
-                      SizedBox(width: 8),
-                      Text('الملازم والكتب الدراسية', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const Divider(height: 20),
-                  ListTile(
-                    leading: const Icon(Icons.book, color: Colors.green),
-                    title: const Text('الكتب المنهجية الرسمية'),
-                    subtitle: const Text('تنزيل المناهج المقررة لجميع المراحل'),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.verified, color: Colors.blue),
-                    title: const Text('الملازم الوزارية'),
-                    subtitle: const Text('أفضل الملازم المعتمدة والشاملة'),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.local_fire_department, color: Colors.red
+  Widget _buildMaterialCategory(BuildContext context, {required String title, required String subtitle, required IconData icon, required Color color}) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(16),
+        leading: CircleAvatar(
+          backgroundColor: color.withOpacity(0.1),
+          child: Icon(icon, color: color),
+        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        subtitle: Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('جاري فتح قسم: $title')),
+          );
+        },
+      ),
+    );
+  }
+}
