@@ -64,9 +64,9 @@ class _AuthScreenState extends State<AuthScreen> {
             children: [
               const Icon(Icons.school, size: 80, color: Colors.blue),
               const SizedBox(height: 16),
-              Text(
-                _isLogin ? 'تسجيل الدخول' : 'إنشاء حساب جديد',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              const Text(
+                'طلبة الخارجي',
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.blue),
               ),
               const SizedBox(height: 8),
               Text(
@@ -137,7 +137,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('بوابة طلبة الخارجي'),
+        title: const Text('طلبة الخارجي - الرئيسية'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -160,7 +160,7 @@ class HomeScreen extends StatelessWidget {
           mainAxisSpacing: 16,
           childAspectRatio: 0.95,
           children: [
-            // المربع 1: العداد التنازلي وموعد التقديم (مع العداد الحي)
+            // المربع 1: العداد التنازلي الحي وموعد التقديم
             const CountdownGridCard(),
 
             // المربع 2: اختيار المرحلة الدراسية
@@ -268,7 +268,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// ================= مربع العداد التنازلي التفاعلي (Live Counter Card) =================
+// ================= مربع العداد التنازلي الحي (يعمل بالثانية والأيام والساعات) =================
 class CountdownGridCard extends StatefulWidget {
   const CountdownGridCard({super.key});
 
@@ -279,7 +279,7 @@ class CountdownGridCard extends StatefulWidget {
 class _CountdownGridCardState extends State<CountdownGridCard> {
   late Timer _timer;
   Duration _timeLeft = Duration.zero;
-  final DateTime _examDate = DateTime(2027, 2, 1, 8, 0, 0);
+  final DateTime _examDate = DateTime(2027, 2, 1, 8, 0, 0); // موعد الامتحان التمهيدي
 
   @override
   void initState() {
@@ -308,14 +308,21 @@ class _CountdownGridCardState extends State<CountdownGridCard> {
   @override
   Widget build(BuildContext context) {
     final days = _timeLeft.inDays;
+    final hours = _timeLeft.inHours % 24;
+    final minutes = _timeLeft.inMinutes % 60;
+    final seconds = _timeLeft.inSeconds % 60;
 
     return InkWell(
       onTap: () {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('مواعيد التقديم والامتحان'),
-            content: Text('⏳ متبقي للامتحان التمهيدي: $days يوماً\n\n📅 موعد فتح التقديم الرسمي: 20 تشرين الثاني 2026'),
+            title: const Text('موعد التقديم والامتحان'),
+            content: Text(
+              '⏳ الوقت المتبقي للامتحان التمهيدي (1 شباط 2027):\n\n'
+              '$days يوماً و $hours ساعة و $minutes دقيقة و $seconds ثانية\n\n'
+              '📅 موعد فتح التقديم الرسمي: 20 تشرين الثاني 2026',
+            ),
             actions: [
               TextButton(onPressed: () => Navigator.pop(context), child: const Text('حسناً'))
             ],
@@ -336,28 +343,51 @@ class _CountdownGridCardState extends State<CountdownGridCard> {
           ],
           border: Border.all(color: Colors.orange.withOpacity(0.3), width: 1.5),
         ),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              radius: 28,
-              backgroundColor: Color(0xFFFFE0B2), // Orange 100
-              child: Icon(Icons.timer, size: 30, color: Colors.orange),
-            ),
-            const SizedBox(height: 12),
+            const Icon(Icons.timer, size: 26, color: Colors.orange),
+            const SizedBox(height: 4),
             const Text(
               'الامتحان والتقديم',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
-            Text(
-              'متبقي $days يوماً',
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.orange),
-              textAlign: TextAlign.center,
+            const SizedBox(height: 6),
+            // عداد حي بالأيام والساعات والدقائق والثواني
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildTimeUnit(seconds.toString(), 'ث'),
+                const Text(':', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange, fontSize: 11)),
+                _buildTimeUnit(minutes.toString(), 'د'),
+                const Text(':', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange, fontSize: 11)),
+                _buildTimeUnit(hours.toString(), 'س'),
+                const Text(':', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange, fontSize: 11)),
+                _buildTimeUnit(days.toString(), 'يوم'),
+              ],
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTimeUnit(String value, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2.0),
+      child: Column(
+        children: [
+          Text(
+            value.padLeft(2, '0'),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.orange),
+          ),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 8, color: Colors.grey),
+          ),
+        ],
       ),
     );
   }
