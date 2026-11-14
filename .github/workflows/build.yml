@@ -1,4 +1,4 @@
-name: Build Flutter APK
+name: Build and Release APK
 
 on:
   push:
@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -34,11 +36,16 @@ jobs:
             flutter create . --platforms=android
           fi
 
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build APK with Obfuscation
+        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols
 
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
+      - name: Create Release and Upload APK
+        uses: softprops/action-gh-release@v1
         with:
-          name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          files: build/app/outputs/flutter-apk/app-release.apk
+          tag_name: v1.0.${{ github.run_number }}
+          name: Release v1.0.${{ github.run_number }}
+          body: "نسخة التطبيق الرسمية المحمية والجاهزة للتثبيت المباشر."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
