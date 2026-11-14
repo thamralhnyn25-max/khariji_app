@@ -4,14 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // إضافة حماية ومهلة زمنية لكي لا يعلق التطبيق إذا انقطع الإنترنت أو تأخر الـ Firebase
   try {
     await Firebase.initializeApp().timeout(const Duration(seconds: 5));
   } catch (e) {
     debugPrint('Firebase init error: $e');
   }
-  
   runApp(const MyApp());
 }
 
@@ -40,14 +37,26 @@ class StudentsScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('students').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('students')
+            .snapshots()
+            .timeout(
+              const Duration(seconds: 6),
+              onTimeout: (sink) {
+                throw Exception("انتهت مهلة الاتصال بقاعدة البيانات");
+              },
+            ),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return const Center(child: Text('حدث خطأ في تحميل البيانات'));
+            return Center(
+              child: Text('حدث خطأ في الاتصال: ${snapshot.error}'),
+            );
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: Text('جاري جلب بيانات الطلاب...'),
+            );
           }
 
           final data = snapshot.data;
@@ -61,7 +70,7 @@ class StudentsScreen extends StatelessWidget {
               return ListTile(
                 leading: const Icon(Icons.person, color: Colors.blue),
                 title: Text(studentData['name'] ?? 'بدون اسم'),
-                subtitle: Text('رقم المقعد: ${document.id}'),
+                subtitle: Text('رقم القيد: ${document.id}'),
               );
             }).toList(),
           );
