@@ -2,47 +2,49 @@ import 'package:flutter/material.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(const KharijiApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class KharijiApp extends StatelessWidget {
+  const KharijiApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'طلبة الخارجي',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const StudentsScreen(),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.grey[100],
+      ),
+      home: const LoginScreen(),
     );
   }
 }
 
-class StudentsScreen extends StatelessWidget {
-  const StudentsScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('طلبة الخارجي'),
-        centerTitle: true,
-      ),
-      body: ListView(
-        children: const [
-          ListTile(
-            leading: Icon(Icons.person, color: Colors.blue),
-            title: Text('أحمد (طالب تجريبي)'),
-            subtitle: Text('رقم القيد: 313 - يعمل بكفاءة ودون أخطاء'),
-          ),
-          ListTile(
-            leading: Icon(Icons.check_circle, color: Colors.green),
-            title: Text('حالة التطبيق'),
-            subtitle: Text('تم تجاوز مشكلة الشاشة الرمادية بنجاح'),
-          ),
-        ],
-      ),
-    );
-  }
+  State<LoginScreen> createState() => _LoginScreenState();
 }
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  void _login() {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // محاكاة عملية تسجيل الدخول (سيتم ربطها بـ Firebase لاحقاً)
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      
