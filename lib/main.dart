@@ -4,53 +4,64 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
+  
+  // إضافة حماية ومهلة زمنية لكي لا يعلق التطبيق إذا انقطع الإنترنت أو تأخر الـ Firebase
+  try {
+    await Firebase.initializeApp().timeout(const Duration(seconds: 5));
+  } catch (e) {
+    debugPrint('Firebase init error: $e');
+  }
+  
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'طلبة الخارجي',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: StudentsScreen(),
+      home: const StudentsScreen(),
     );
   }
 }
 
 class StudentsScreen extends StatelessWidget {
+  const StudentsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('طلبة الخارجي - العراق'),
+        title: const Text('طلبة الخارجي'),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('students').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('حدث خطأ في تحميل البيانات'));
+            return const Center(child: Text('حدث خطأ في تحميل البيانات'));
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           final data = snapshot.data;
           if (data == null || data.docs.isEmpty) {
-            return Center(child: Text('لا توجد بيانات طلاب حالياً'));
+            return const Center(child: Text('لا توجد بيانات حالياً'));
           }
 
           return ListView(
-            children: data.docs.map((DocumentSnapshot document) {
+            children: data.docs.map((document) {
               Map<String, dynamic> studentData = document.data() as Map<String, dynamic>;
               return ListTile(
-                leading: Icon(Icons.person, color: Colors.blue),
+                leading: const Icon(Icons.person, color: Colors.blue),
                 title: Text(studentData['name'] ?? 'بدون اسم'),
-                subtitle: Text('رقم المعرف: ${document.id}'),
+                subtitle: Text('رقم المقعد: ${document.id}'),
               );
             }).toList(),
           );
