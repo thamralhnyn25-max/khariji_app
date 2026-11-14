@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +17,6 @@ class KharijiApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.grey[100],
-        fontFamily: 'Cairo', // أو الخط الافتراضي
       ),
       home: const AuthScreen(),
     );
@@ -42,7 +42,6 @@ class _AuthScreenState extends State<AuthScreen> {
       _isLoading = true;
     });
 
-    // محاكاة تسجيل الدخول أو إنشاء حساب (جلسة ثابتة)
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _isLoading = false;
@@ -130,7 +129,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 }
 
-// ================= الواجهة الرئيسية وتحتوي الخانات الأربع =================
+// ================= الواجهة الرئيسية =================
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -139,7 +138,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // متغيرات لاختيار المرحلة الدراسية
   String? selectedStage;
   String? selectedBranch;
 
@@ -171,30 +169,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // ================= الخانة 1: عداد موعد الامتحان التمهيدي ومواعيد التقديم =================
-          Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: const [
-                      Icon(Icons.timer, color: Colors.orange, size: 28),
-                      SizedBox(width: 8),
-                      Text('الامتحان التمهيدي ومواعيد التقديم', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const Divider(height: 20),
-                  const Text('⏳ الوقت المتبقي للتمهيدي: جارٍ تحديث العداد...', style: TextStyle(fontSize: 14, color: Colors.black87)),
-                  const SizedBox(height: 8),
-                  const Text('📅 موعد التقديم الرسمي: يُعلن عنه قريباً عبر الوزارة', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                ],
-              ),
-            ),
-          ),
+          // ================= الخانة 1: عداد الوقت التنازلي وموعد التقديم =================
+          const ExamCountdownCard(),
           const SizedBox(height: 16),
 
           // ================= الخانة 2: اختيار المرحلة الدراسية =================
@@ -226,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onChanged: (value) {
                       setState(() {
                         selectedStage = value;
-                        selectedBranch = null; // إعادة تعيين الفرع عند تغير المرحلة
+                        selectedBranch = null;
                       });
                     },
                   ),
@@ -276,9 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: const Text('الكتب المنهجية الرسمية'),
                     subtitle: const Text('تنزيل المناهج المقررة لجميع المراحل'),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {
-                      // إجراء النقل لاحقاً
-                    },
+                    onTap: () {},
                   ),
                   ListTile(
                     leading: const Icon(Icons.verified, color: Colors.blue),
@@ -288,58 +262,4 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () {},
                   ),
                   ListTile(
-                    leading: const Icon(Icons.local_fire_department, color: Colors.red),
-                    title: const Text('ملازم المراجعات المركزة'),
-                    subtitle: const Text('ملخصات ومهمات لضمان النجاح'),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // ================= الخانة 4: البث المباشر ولوحة التحكم للمنظمين =================
-          Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: const [
-                      Icon(Icons.live_tv, color: Colors.purple, size: 28),
-                      SizedBox(width: 8),
-                      Text('البث المباشر ولوحة المنظمين', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const Divider(height: 20),
-                  const Text('تابع المحاضرات الإرشادية والدروس الحية بجودة عالية ودون تقطيع.', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      icon: const Icon(Icons.play_circle_fill),
-                      label: const Text('دخول البث المباشر / لوحة التحكم'),
-                      onPressed: () {
-                        // الانتقال للبث أو لوحة التحكم لاحقاً
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+                    leading: const Icon(Icons.local_fire_department, color: Colors.red
