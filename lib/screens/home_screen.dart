@@ -11,19 +11,60 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
 
-  final Color primaryColor = const Color(0xFF12345A);
+  static const Color primaryColor = Color(0xFF12345A);
+  static const Color backgroundColor = Color(0xFFF4F7FB);
 
   final List<Map<String, dynamic>> services = [
-    {'title': 'الكتب المدرسية', 'icon': Icons.menu_book, 'color': Colors.blue},
-    {'title': 'الملازم التعليمية', 'icon': Icons.library_books, 'color': Colors.orange},
-    {'title': 'المراحل الدراسية', 'icon': Icons.school, 'color': Colors.green},
-    {'title': 'الأسئلة الوزارية', 'icon': Icons.quiz, 'color': Colors.purple},
-    {'title': 'الامتحانات', 'icon': Icons.assignment, 'color': Colors.red},
-    {'title': 'النتائج', 'icon': Icons.fact_check, 'color': Colors.teal},
-    {'title': 'الأخبار والقرارات', 'icon': Icons.newspaper, 'color': Colors.indigo},
-    {'title': 'جدول الدراسة', 'icon': Icons.calendar_month, 'color': Colors.brown},
-    {'title': 'المفضلة', 'icon': Icons.favorite, 'color': Colors.pink},
-    {'title': 'الدعم الفني', 'icon': Icons.support_agent, 'color': Colors.cyan},
+    {
+      'title': 'الكتب المدرسية',
+      'icon': Icons.menu_book,
+      'color': Colors.blue,
+    },
+    {
+      'title': 'الملازم التعليمية',
+      'icon': Icons.library_books,
+      'color': Colors.orange,
+    },
+    {
+      'title': 'المراحل الدراسية',
+      'icon': Icons.school,
+      'color': Colors.green,
+    },
+    {
+      'title': 'الأسئلة الوزارية',
+      'icon': Icons.quiz,
+      'color': Colors.purple,
+    },
+    {
+      'title': 'الامتحانات',
+      'icon': Icons.assignment,
+      'color': Colors.red,
+    },
+    {
+      'title': 'النتائج',
+      'icon': Icons.fact_check,
+      'color': Colors.teal,
+    },
+    {
+      'title': 'الأخبار والقرارات',
+      'icon': Icons.newspaper,
+      'color': Colors.indigo,
+    },
+    {
+      'title': 'جدول الدراسة',
+      'icon': Icons.calendar_month,
+      'color': Colors.brown,
+    },
+    {
+      'title': 'المفضلة',
+      'icon': Icons.favorite,
+      'color': Colors.pink,
+    },
+    {
+      'title': 'الدعم الفني',
+      'icon': Icons.support_agent,
+      'color': Colors.cyan,
+    },
   ];
 
   @override
@@ -31,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF4F7FB),
+        backgroundColor: backgroundColor,
         appBar: AppBar(
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
@@ -54,12 +95,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                _showMessage('الإشعارات');
+              },
               icon: const Icon(Icons.notifications_none),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.account_circle_outlined),
             ),
           ],
         ),
@@ -68,34 +107,47 @@ class _HomeScreenState extends State<HomeScreen> {
           index: selectedIndex,
           children: [
             _buildHome(),
-            _buildSimplePage('المكتبة التعليمية', Icons.local_library),
-            _buildSimplePage('الإشعارات', Icons.notifications),
-            _buildSimplePage('حسابي', Icons.person),
+            _buildSimplePage(
+              'المكتبة التعليمية',
+              Icons.local_library,
+            ),
+            _buildSimplePage(
+              'الإشعارات',
+              Icons.notifications,
+            ),
+            _buildSimplePage(
+              'حسابي',
+              Icons.person,
+            ),
           ],
         ),
 
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: selectedIndex,
-          onDestinationSelected: (index) {
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: selectedIndex,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: primaryColor,
+          unselectedItemColor: Colors.grey,
+          backgroundColor: Colors.white,
+          onTap: (index) {
             setState(() {
               selectedIndex = index;
             });
           },
-          destinations: const [
-            NavigationDestination(
+          items: const [
+            BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
+              activeIcon: Icon(Icons.home),
               label: 'الرئيسية',
             ),
-            NavigationDestination(
-              icon: Icon(Icons.menu_book_outlined),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.menu_book),
               label: 'المكتبة',
             ),
-            NavigationDestination(
+            BottomNavigationBarItem(
               icon: Icon(Icons.notifications_outlined),
               label: 'الإشعارات',
             ),
-            NavigationDestination(
+            BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
               label: 'حسابي',
             ),
@@ -116,7 +168,10 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF12345A), Color(0xFF2878B9)],
+                colors: [
+                  Color(0xFF12345A),
+                  Color(0xFF2878B9),
+                ],
               ),
               borderRadius: BorderRadius.circular(18),
             ),
@@ -124,19 +179,22 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'أهلاً بك في بوابة طلبة العراق 👋',
+                  'أهلاً بك في بوابة طلبة العراق',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 19,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 12),
                 Text(
                   'كل ما تحتاجه في رحلتك الدراسية تجده هنا',
-                  style: TextStyle(color: Colors.white70),
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
                 ),
-                SizedBox(height: 15),
+                SizedBox(height: 18),
                 Text(
                   'تعلم اليوم لتصنع مستقبلك غداً',
                   style: TextStyle(
@@ -148,20 +206,26 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          const SizedBox(height: 22),
+          const SizedBox(height: 24),
 
           const Text(
-            'ابحث عن كتاب أو ملزمة',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            'البحث في المكتبة التعليمية',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          const SizedBox(height: 10),
+
+          const SizedBox(height: 12),
 
           TextField(
+            textDirection: TextDirection.rtl,
             decoration: InputDecoration(
-              hintText: 'اكتب اسم المادة أو الكتاب...',
+              hintText: 'ابحث عن كتاب أو ملزمة...',
               prefixIcon: const Icon(Icons.search),
               filled: true,
               fillColor: Colors.white,
+              contentPadding: const EdgeInsets.all(15),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,
@@ -169,14 +233,17 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 25),
 
           const Text(
             'الخدمات التعليمية',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 15),
 
           GridView.builder(
             shrinkWrap: true,
@@ -187,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 1.45,
+              childAspectRatio: 1.4,
             ),
             itemBuilder: (context, index) {
               final item = services[index];
@@ -195,20 +262,17 @@ class _HomeScreenState extends State<HomeScreen> {
               return InkWell(
                 borderRadius: BorderRadius.circular(15),
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('قسم ${item['title']} قيد التجهيز'),
-                    ),
+                  _showMessage(
+                    'قسم ${item['title']} قيد التجهيز',
                   );
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(13),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withOpacity(0.05),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
@@ -218,13 +282,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        item['icon'],
-                        color: item['color'],
-                        size: 32,
+                        item['icon'] as IconData,
+                        color: item['color'] as Color,
+                        size: 34,
                       ),
-                      const SizedBox(height: 9),
+                      const SizedBox(height: 10),
                       Text(
-                        item['title'],
+                        item['title'] as String,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 13,
@@ -238,11 +302,11 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 25),
 
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(17),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
@@ -251,20 +315,25 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '📢 آخر الأخبار والإعلانات',
+                  'آخر الأخبار والإعلانات',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 12),
                 Text(
                   'تابع آخر أخبار وزارة التربية والتعليمات والقرارات الرسمية.',
-                  style: TextStyle(color: Colors.black54),
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
           ),
+
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -275,7 +344,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 65, color: primaryColor),
+          Icon(
+            icon,
+            size: 65,
+            color: primaryColor,
+          ),
           const SizedBox(height: 15),
           Text(
             title,
@@ -285,8 +358,19 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text('سيتم تجهيز هذا القسم في المرحلة القادمة'),
+          const Text(
+            'سيتم تجهيز هذا القسم في المرحلة القادمة',
+          ),
         ],
+      ),
+    );
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
