@@ -3,6 +3,7 @@ name: Build Flutter APK
 on:
   push:
     branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -23,6 +24,9 @@ jobs:
         with:
           flutter-version: '3.19.x'
           channel: 'stable'
+
+      - name: Create Flutter Project Structure
+        run: flutter create . --org com.khariji.app --platforms=android
 
       - name: Install dependencies
         run: flutter pub get
