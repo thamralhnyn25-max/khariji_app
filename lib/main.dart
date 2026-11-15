@@ -1,31 +1,28 @@
-import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
-import 'screens/login_screen.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const IraqStudentsApp());
-}
+name: khariji_app
 
-class IraqStudentsApp extends StatelessWidget {
-  const IraqStudentsApp({super.key});
+description: "بوابة طلبة العراق - IRAQ STUDENTS GATE"
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'بوابة العراق',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: const Color(0xFF12345A),
-        scaffoldBackgroundColor: const Color(0xFFF4F7FB),
-        useMaterial3: true,
-        fontFamily: 'Arial',
-      ),
-      home: const LoginScreen(),
-      routes: {
-        '/home': (context) => const HomeScreen(),
-      },
-    );
-  }
-}
+publish_to: 'none'
 
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  firebase_core: ^2.24.2
+  cloud_firestore: ^4.14.0
+  firebase_auth: ^4.16.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
