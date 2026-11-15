@@ -1,28 +1,80 @@
 
-name: khariji_app
+import 'package:flutter/material.dart';
 
-description: "بوابة طلبة العراق - IRAQ STUDENTS GATE"
+class AppColors {
+  static const Color primary = Color(0xFF087F5B);
+  static const Color primaryDark = Color(0xFF075B43);
+  static const Color secondary = Color(0xFFD6A84B);
 
-publish_to: 'none'
+  static const Color background = Color(0xFFF5F8F7);
+  static const Color surface = Colors.white;
+  static const Color textDark = Color(0xFF172B26);
+  static const Color textMuted = Color(0xFF82918B);
 
-version: 1.0.0+1
+  static const Color success = Color(0xFF219653);
+  static const Color error = Color(0xFFD64545);
+}
 
-environment:
-  sdk: '>=3.0.0 <4.0.0'
+class AppTheme {
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      fontFamily: 'Cairo',
 
-dependencies:
-  flutter:
-    sdk: flutter
+      scaffoldBackgroundColor: AppColors.background,
 
-  firebase_core: ^2.24.2
-  cloud_firestore: ^4.14.0
-  firebase_auth: ^4.16.0
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary,
+        brightness: Brightness.light,
+        primary: AppColors.primary,
+        secondary: AppColors.secondary,
+        surface: AppColors.surface,
+      ),
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.white,
+        foregroundColor: AppColors.textDark,
+        centerTitle: true,
+        elevation: 0,
+      ),
 
-  flutter_lints: ^3.0.0
+      cardTheme: CardThemeData(
+        color: Colors.white,
+        elevation: 1,
+        margin: const EdgeInsets.all(8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
 
-flutter:
-  uses-material-design: true
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 17,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: Color(0xFFE4ECE8),
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: Color(0xFFE4ECE8),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: AppColors.primary,
+            width: 1.5,
+          ),
+        ),
+      ),
+    );
+  }
+}
