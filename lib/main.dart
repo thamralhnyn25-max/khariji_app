@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +14,7 @@ class IraqStudentsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'بوابة طلبة العراق',
+      title: 'بوابة العراق',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: const Color(0xFF12345A),
@@ -21,7 +22,10 @@ class IraqStudentsApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Arial',
       ),
-      home: const HomeScreen(),
+      home: const LoginScreen(),
+      routes: {
+        '/home': (context) => const HomeScreen(),
+      },
     );
   }
 }
