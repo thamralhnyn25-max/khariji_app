@@ -75,6 +75,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   void _submit() {
     if (_formKey.currentState!.validate() && _selectedProvince != null && _selectedCategory != null) {
+      String detail = '';
+      if (_selectedCategory == 'طالب مدرسة') {
+        detail = _selectedSchoolGrade ?? 'غير محدد';
+      } else if (_selectedCategory == 'طالب خارجي') {
+        detail = '${_selectedKharijiStage ?? ''} ${_selectedKharijiBranch ?? ''}';
+      } else {
+        detail = '${_universityController.text} (${_selectedUniversityStage ?? ''})';
+      }
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -82,9 +91,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             userName: _nameController.text,
             userProvince: _selectedProvince!,
             userCategory: _selectedCategory!,
-            subDetail: _selectedCategory == 'طالب مدرسة' ? _selectedSchoolGrade ?? '' :
-                       _selectedCategory == 'طالب خارجي' ? '$_selectedKharijiStage ${_selectedKharijiBranch ?? ''}' :
-                       _universityController.text,
+            subDetail: detail,
           ),
         ),
       );
@@ -363,7 +370,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
-// 3. الشاشة الرئيسية المطابقة لتطبيق صديقك مع زر الرسائل والدردشة
+// 3. الشاشة الرئيسية
 class HomeScreen extends StatelessWidget {
   final String userName;
   final String userProvince;
@@ -625,7 +632,7 @@ class NewsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Text('أ. بسام • منشور مبيت 📌', style: TextStyle(color: Color(0xFF38BDF8), fontSize: 12, fontWeight: FontWeight.bold)),
+                Text('أ. بسام • منشور مثبت 📌', style: TextStyle(color: Color(0xFF38BDF8), fontSize: 12, fontWeight: FontWeight.bold)),
                 SizedBox(height: 8),
                 Text('دورات لطلاب الثالث المتوسط والسادس الإعدادي تبدأ من الصفر للتمهيدي!', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
                 SizedBox(height: 6),
