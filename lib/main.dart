@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const StudentsIraqApp());
+  runApp(const AlamAkadimiApp());
 }
 
-class StudentsIraqApp extends StatelessWidget {
-  const StudentsIraqApp({super.key});
+class AlamAkadimiApp extends StatelessWidget {
+  const AlamAkadimiApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'بوابة طلبة العراق',
+      title: 'عالم أكاديمي',
       theme: ThemeData(
         fontFamily: 'Cairo',
         primarySwatch: Colors.indigo,
+        scaffoldBackgroundColor: const Color(0xFF0F172A),
       ),
       home: const RegistrationScreen(),
     );
   }
 }
 
+// 1. شاشة التسجيل الذكية والمتفرعة
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
 
@@ -80,6 +82,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             userName: _nameController.text,
             userProvince: _selectedProvince!,
             userCategory: _selectedCategory!,
+            subDetail: _selectedCategory == 'طالب مدرسة' ? _selectedSchoolGrade ?? '' :
+                       _selectedCategory == 'طالب خارجي' ? '$_selectedKharijiStage ${_selectedKharijiBranch ?? ''}' :
+                       _universityController.text,
           ),
         ),
       );
@@ -96,7 +101,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
@@ -110,12 +114,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               const SizedBox(height: 16),
               const Text(
-                'بوابة طلبة العراق',
+                'عالم أكاديمي',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               const SizedBox(height: 6),
               const Text(
-                'منصتك التعليمية الشاملة لجميع المراحل',
+                'بوابة طلبة العراق الشاملة',
                 style: TextStyle(color: Colors.white70, fontSize: 13),
               ),
               const SizedBox(height: 24),
@@ -183,7 +187,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         value: _selectedCategory,
                         dropdownColor: const Color(0xFF1E293B),
                         style: const TextStyle(color: Colors.white),
-                        hint: const Text('حدد مرحلتك الدراسية العامة', style: TextStyle(color: Colors.grey)),
+                        hint: const Text('حدد فئتك الدراسية العامة', style: TextStyle(color: Colors.grey)),
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.category_outlined, color: Color(0xFF3B82F6)),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -263,7 +267,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             labelStyle: const TextStyle(color: Colors.grey),
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          validator: (value) => value!.isEmpty ? 'يرجى كتابة اسم الجامعة والكلية' : null,
+                          validator: (value) => value!.isEmpty ? 'يرجى كتابة اسم الجامعة' : null,
                         ),
                         const SizedBox(height: 14),
                         DropdownButtonFormField<String>(
@@ -306,16 +310,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 }
 
+// 2. التنقل السفلي الاحترافي
 class MainNavigationScreen extends StatefulWidget {
   final String userName;
   final String userProvince;
   final String userCategory;
+  final String subDetail;
 
   const MainNavigationScreen({
     super.key,
     required this.userName,
     required this.userProvince,
     required this.userCategory,
+    required this.subDetail,
   });
 
   @override
@@ -327,10 +334,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   late final List<Widget> _screens = [
     HomeScreen(userName: widget.userName, userProvince: widget.userProvince, userCategory: widget.userCategory),
-    const Center(child: Text('قسم الكتب والملازم الشاملة', style: TextStyle(color: Colors.white, fontSize: 18))),
-    const Center(child: Text('قسم الاختبارات والامتحانات', style: TextStyle(color: Colors.white, fontSize: 18))),
-    const Center(child: Text('الأخبار والتبليغات الوزارية', style: TextStyle(color: Colors.white, fontSize: 18))),
-    ProfileScreen(userName: widget.userName, userProvince: widget.userProvince, userCategory: widget.userCategory),
+    const BooksScreen(),
+    const QuizzesScreen(),
+    const NewsScreen(),
+    ProfileScreen(userName: widget.userName, userProvince: widget.userProvince, userCategory: widget.userCategory, subDetail: widget.subDetail),
   ];
 
   @override
@@ -339,7 +346,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        selectedItemColor: const Color(0xFF3B82F6),
+        selectedItemColor: const Color(0xFFFACC15),
         unselectedItemColor: Colors.grey,
         backgroundColor: const Color(0xFF0F172A),
         type: BottomNavigationBarType.fixed,
@@ -356,6 +363,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
+// 3. الشاشة الرئيسية المطابقة لتطبيق صديقك مع زر الرسائل والدردشة
 class HomeScreen extends StatelessWidget {
   final String userName;
   final String userProvince;
@@ -378,8 +386,10 @@ class HomeScreen extends StatelessWidget {
         title: Text('أهلاً، $userName', style: const TextStyle(color: Color(0xFF1E293B), fontSize: 16, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_active_outlined, color: Color(0xFF1E293B)),
-            onPressed: () {},
+            icon: const Icon(Icons.send_rounded, color: Color(0xFF1E293B)),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const MessagesScreen()));
+            },
           ),
         ],
       ),
@@ -402,7 +412,7 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('مرحباً بك في بوابة طلبة العراق', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                        const Text('أهلاً بك في بوابة طلبة العراق', style: TextStyle(color: Colors.white70, fontSize: 12)),
                         const SizedBox(height: 2),
                         Text('$userCategory - محافظة $userProvince', style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
                       ],
@@ -425,7 +435,8 @@ class HomeScreen extends StatelessWidget {
                   children: const [
                     Text('العد التنازلي للامتحانات التمهيدية (خاص بطلبة الخارجي)', style: TextStyle(color: Colors.white70, fontSize: 12)),
                     SizedBox(height: 8),
-                    Text('83 يوم', style: TextStyle(color: Color(0xFFFACC15), fontSize: 36, fontWeight: FontWeight.bold)),
+                    Text('82 يوم', style: TextStyle(color: Color(0xFFFACC15), fontSize: 36, fontWeight: FontWeight.bold)),
+                    Text('07 : 22 : 59', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                     Text('حتى 2027/02/05', style: TextStyle(color: Colors.white54, fontSize: 12)),
                   ],
                 ),
@@ -492,16 +503,211 @@ class _ToolCard extends StatelessWidget {
   }
 }
 
+// 4. قسم الكتب والملازم
+class BooksScreen extends StatelessWidget {
+  const BooksScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<String> subjects = ['التربية الإسلامية', 'اللغة العربية', 'اللغة الإنجليزية', 'الرياضيات', 'الكيمياء', 'الفيزياء', 'الأحياء'];
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F172A),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text('كتب وملازم المراحل الدراسية', style: TextStyle(color: Colors.white, fontSize: 18)),
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: subjects.length,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E293B),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.between,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.menu_book, color: Color(0xFF38BDF8), size: 24),
+                    const SizedBox(width: 14),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(subjects[index], style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                        const Text('الكتب والملازم والأسئلة الوزارية', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      ],
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text('متاحة', style: TextStyle(color: Colors.greenAccent, fontSize: 12)),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// 5. قسم الاختبارات
+class QuizzesScreen extends StatelessWidget {
+  const QuizzesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F172A),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text('الامتحانات والاختبارات الذكية', style: TextStyle(color: Colors.white, fontSize: 18)),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E293B),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text('اختبر فهمك للمحاضرة', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 6),
+                  Text('اختر المادة وابدأ اختبار المحاكي الوزاري بثواني.', style: TextStyle(color: Colors.grey, fontSize: 13)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// 6. قسم الأخبار
+class NewsScreen extends StatelessWidget {
+  const NewsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F172A),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text('الأخبار والمواعيد الوزارية', style: TextStyle(color: Colors.white, fontSize: 18)),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E293B),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text('أ. بسام • منشور مبيت 📌', style: TextStyle(color: Color(0xFF38BDF8), fontSize: 12, fontWeight: FontWeight.bold)),
+                SizedBox(height: 8),
+                Text('دورات لطلاب الثالث المتوسط والسادس الإعدادي تبدأ من الصفر للتمهيدي!', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+                SizedBox(height: 6),
+                Text('إذا أنت طالب ثالث متوسط أو سادس إعدادي، تابع معنا التفاصيل أولاً باول.', style: TextStyle(color: Colors.grey, fontSize: 13)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 7. شاشة الرسائل والدردشة الجماعية
+class MessagesScreen extends StatelessWidget {
+  const MessagesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F172A),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text('الرسائل', style: TextStyle(color: Colors.white)),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E293B),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                const CircleAvatar(
+                  backgroundColor: Color(0xFFFACC15),
+                  child: Icon(Icons.forum, color: Color(0xFF0F172A)),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text('الدردشة الجماعية', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                      SizedBox(height: 2),
+                      Text('كل الطلاب في مكان واحد', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
+                    color: Colors.redAccent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Text('9+', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 8. شاشة الحساب الشخصي
 class ProfileScreen extends StatelessWidget {
   final String userName;
   final String userProvince;
   final String userCategory;
+  final String subDetail;
 
   const ProfileScreen({
     super.key,
     required this.userName,
     required this.userProvince,
     required this.userCategory,
+    required this.subDetail,
   });
 
   @override
@@ -517,10 +723,10 @@ class ProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 45,
-              backgroundColor: Color(0xFF3B82F6),
-              child: Icon(Icons.person, size: 50, color: Colors.white),
+              backgroundColor: const Color(0xFF38BDF8),
+              child: Text(userName.isNotEmpty ? userName[0] : 'ط', style: const TextStyle(fontSize: 36, color: Colors.white, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 12),
             Text(userName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
@@ -539,8 +745,11 @@ class ProfileScreen extends StatelessWidget {
                   const Text('المحافظة', style: TextStyle(color: Colors.grey, fontSize: 12)),
                   Text(userProvince, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
                   const Divider(color: Colors.white12, height: 24),
-                  const Text('الصفة / التصنيف', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                  const Text('الفئة الدراسية', style: TextStyle(color: Colors.grey, fontSize: 12)),
                   Text(userCategory, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                  const Divider(color: Colors.white12, height: 24),
+                  const Text('التفاصيل / المرحلة', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                  Text(subDetail, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
                   const Divider(color: Colors.white12, height: 24),
                   const Text('حالة الحساب', style: TextStyle(color: Colors.grey, fontSize: 12)),
                   const Text('طالب رسمي (حساب موثق)', style: TextStyle(color: Colors.greenAccent, fontSize: 14, fontWeight: FontWeight.bold)),
