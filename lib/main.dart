@@ -173,7 +173,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         items: _provinces.map((province) {
-                          return DropdownMenuItem(value: province, child: Text(province));
+                          return DropdownMenuItem<String>(value: province, child: Text(province));
                         }).toList(),
                         onChanged: (value) => setState(() => _selectedProvince = value),
                       ),
@@ -189,7 +189,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         items: _categories.map((cat) {
-                          return DropdownMenuItem(value: cat, child: Text(cat));
+                          return DropdownMenuItem<String>(value: cat, child: Text(cat));
                         }).toList(),
                         onChanged: (value) => setState(() {
                           _selectedCategory = value;
@@ -211,7 +211,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                           ),
                           items: _schoolGrades.map((grade) {
-                            return DropdownMenuItem(value: grade, child: Text(grade));
+                            return DropdownMenuItem<String>(value: grade, child: Text(grade));
                           }).toList(),
                           onChanged: (value) => setState(() => _selectedSchoolGrade = value),
                         ),
@@ -228,7 +228,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                           ),
                           items: _kharijiStages.map((stage) {
-                            return DropdownMenuItem(value: stage, child: Text(stage));
+                            return DropdownMenuItem<String>(value: stage, child: Text(stage));
                           }).toList(),
                           onChanged: (value) => setState(() {
                             _selectedKharijiStage = value;
@@ -246,7 +246,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             items: _kharijiBranches.map((branch) {
-                              return DropdownMenuItem(value: branch, child: Text(branch));
+                              return DropdownMenuItem<String>(value: branch, child: Text(branch));
                             }).toList(),
                             onChanged: (value) => setState(() => _selectedKharijiBranch = value),
                           ),
@@ -275,7 +275,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                           ),
                           items: _universityStages.map((ustage) {
-                            return DropdownMenuItem(value: ustage, child: Text(ustage));
+                            return DropdownMenuItem<String>(value: ustage, child: Text(ustage));
                           }).toList(),
                           onChanged: (value) => setState(() => _selectedUniversityStage = value),
                         ),
@@ -425,4 +425,131 @@ class HomeScreen extends StatelessWidget {
                   children: const [
                     Text('العد التنازلي للامتحانات التمهيدية (خاص بطلبة الخارجي)', style: TextStyle(color: Colors.white70, fontSize: 12)),
                     SizedBox(height: 8),
-                    Text('83 يوم', style: TextStyle(color: Color(0xFFFACC15), fontSize: 36
+                    Text('83 يوم', style: TextStyle(color: Color(0xFFFACC15), fontSize: 36, fontWeight: FontWeight.bold)),
+                    Text('حتى 2027/02/05', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            const Text('الأدوات والخدمات الدراسية', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+            const SizedBox(height: 12),
+
+            GridView.count(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              childAspectRatio: 1.5,
+              children: const [
+                _ToolCard(title: 'حاسبة المعدل', subtitle: 'احسب معدلك بدقة', icon: Icons.calculate_outlined),
+                _ToolCard(title: 'مكتبة الملازم', subtitle: 'جميع المراحل والكتب', icon: Icons.menu_book_rounded),
+                _ToolCard(title: 'الامتحانات الذكية', subtitle: 'اختبر نفسك اليوم', icon: Icons.quiz_outlined),
+                _ToolCard(title: 'تواصل ودعم', subtitle: 'دردشة ومراسلة الأعضاء', icon: Icons.forum_outlined),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ToolCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+
+  const _ToolCard({required this.title, required this.subtitle, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.06), blurRadius: 6, offset: const Offset(0, 2))],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B))),
+              Icon(icon, color: const Color(0xFF3B82F6), size: 20),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 11)),
+        ],
+      ),
+    );
+  }
+}
+
+class ProfileScreen extends StatelessWidget {
+  final String userName;
+  final String userProvince;
+  final String userCategory;
+
+  const ProfileScreen({
+    super.key,
+    required this.userName,
+    required this.userProvince,
+    required this.userCategory,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F172A),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text('الملف الشخصي والحساب', style: TextStyle(color: Colors.white, fontSize: 16)),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            const CircleAvatar(
+              radius: 45,
+              backgroundColor: Color(0xFF3B82F6),
+              child: Icon(Icons.person, size: 50, color: Colors.white),
+            ),
+            const SizedBox(height: 12),
+            Text(userName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+            const Text('@student_iraq', style: TextStyle(color: Color(0xFF38BDF8), fontSize: 14, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 24),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E293B),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('المحافظة', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                  Text(userProvince, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                  const Divider(color: Colors.white12, height: 24),
+                  const Text('الصفة / التصنيف', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                  Text(userCategory, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                  const Divider(color: Colors.white12, height: 24),
+                  const Text('حالة الحساب', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                  const Text('طالب رسمي (حساب موثق)', style: TextStyle(color: Colors.greenAccent, fontSize: 14, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
