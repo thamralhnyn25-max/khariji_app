@@ -1,5 +1,25 @@
 
 import 'package:flutter/material.dart';
+import 'screens/auth/register_screen.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const IraqStudentsApp());
+}
+
+class IraqStudentsApp extends StatelessWidget {
+  const IraqStudentsApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'بوابة طلبة العراق',
+      theme: AppTheme.lightTheme,
+      home: const RegisterScreen(),
+    );
+  }
+}
 
 class AppColors {
   static const Color primary = Color(0xFF087F5B);
@@ -21,7 +41,6 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       fontFamily: 'Cairo',
-
       scaffoldBackgroundColor: AppColors.background,
 
       colorScheme: ColorScheme.fromSeed(
